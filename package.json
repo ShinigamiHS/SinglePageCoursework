@@ -10,6 +10,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.2"
+    "datatables.net-dt": "^1.10.16",
+    "express": "^4.16.2",
+    "jquery": "^3.3.1",
+    "npm": "^5.8.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "CSD2550_E-Commerce"
   }
 }
