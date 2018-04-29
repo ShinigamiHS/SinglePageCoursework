@@ -25,13 +25,19 @@
             var request = new XMLHttpRequest();
             request.onload = function() {
                 if (request.status === 200) {
-                    var responseData = request.responseText;
-                    alert(responseData);
-                    console.log(responseData);
+                    if (sessionStorage.getItem("userId") !== null) {
+                        alert("Someone is already logged in")
+                    }
+                    else {
+                        var responseData = request.responseText;
+                        sessionStorage.userId = responseData;
+                        alert("Logged in successfully");
+                        console.log(responseData);
+                    }
                 }
                 else {
                     alert("Error looking for user in DB: " + request.responseText);
-                    console.log('no');
+                    console.log('not logged');
                 }
             };
             request.open("POST", "/loginAct");
@@ -136,6 +142,7 @@
         <button onclick="closeRightMenu()" id="closeProfile" class="w3-bar-item w3-button w3-large">Close &times;</button>
     </div>
     <button id="openSideBar" class="w3-button w3-teal w3-xlarge w3-right" onclick="openRightMenu()">&#x21CC;</button>
+    <div id="gallery">You need to be logged in to view your photos.</div>
     <div class="imgDisplay1"><img src="images/display/big-one.jpg"></div>
     <div class="imgDisplay2"><img src="images/display/masters-landscape.jpg"></div>
 </body>

@@ -60,8 +60,9 @@ app.post('/loginAct', urlencodedParser, function(req, res) {
             console.log(err);
         }
         if (result != [] && result != "") {
-            res.send('User found in DB');
-            console.log(result);
+            var id = result[0].id;
+            console.log(id);
+            res.send("" + id);
         }
         else {
             res.send('User not found');
