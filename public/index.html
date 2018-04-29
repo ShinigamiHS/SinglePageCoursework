@@ -1,45 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <title>CL☁UD</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Quicksand:700" rel="stylesheet">
-    <link href="appearance.css" type="text/css" rel="stylesheet">
+    <link href="style.css" type="text/css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        function openRightMenu() {
+            document.getElementById("rightMenu").style.display = "block";
+        }
+
+        function closeRightMenu() {
+            document.getElementById("rightMenu").style.display = "none";
+        }
+
+        function checkLogin() {
+            var request = new XMLHttpRequest();
+            request.onload = function() {
+                if (request.status === 200) {
+                    var responseData = request.responseText;
+                    alert(responseData);
+                    console.log(responseData);
+                }
+                else {
+                    alert("Error looking for user in DB: " + request.responseText);
+                    console.log('no');
+                }
+            };
+            request.open("POST", "/loginAct");
+            request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+            var loginEmail = document.getElementById("logEmail").value;
+            var loginPwd = document.getElementById("logPass").value;
+
+            request.send("email=" + loginEmail + "&password=" + loginPwd);
+        }
+
+        function register() {
+            var request = new XMLHttpRequest();
+            request.onload = function() {
+                if (request.status === 200) {
+                    var responseData = request.responseText;
+                    alert(responseData);
+                    console.log(responseData);
+                }
+                else {
+                    alert("Error looking for user in DB: " + request.responseText);
+                    console.log('no');
+                }
+            };
+            request.open("POST", "/register");
+            request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+            var regEmail = document.getElementById("regEmail").value;
+            var regFName = document.getElementById("regFName").value;
+            var regLName = document.getElementById("regLName").value;
+            var regPass = document.getElementById("regPass").value;
+            var regStreet = document.getElementById("regStreet").value;
+            var regCity = document.getElementById("regCity").value;
+            var regPhone = document.getElementById("regPhone").value;
+
+            request.send("email=" + regEmail + "&firstName=" + regFName + "&lastName=" + regLName + "&password=" + regPass + "&street=" + regStreet + "&city=" + regCity + "&phone=" + regPhone);
+        }
+    </script>
 </head>
+
 <body>
     <div class="header">
         <div class=userLog>
-            <label for="username">Username</label><input class="userBox" id="username" type="text" name="username"/>
-            <label for="password">Password</label><input class="passBox" id="password" type="password" name="password" />
-            <button onclick="checkLogin()">Login</button>
+            <label for="email">Email</label>
+            <input class="userBox" id="logEmail" type="text" name="email" required />
+            <label for="password">Password</label>
+            <input class="passBox" id="logPass" type="password" name="password" required />
+            <input type="button" class="btn btn-primary" name="submit" id="subBtn" value="Login" onclick=checkLogin()><br>
+
+            <button type="button" class="btn btn-link" id="reg" data-toggle="modal" data-target="#regmodal">Don't have an account yet? Register!</button>
         </div>
         <div>
-            <img class="logo" src="images/thumb.png" alt="cloud logo"/>
+            <img class="logo" src="images/thumb.png" alt="cloud logo" />
         </div>
-        <button type="button" class="btn btn-link" data-toggle="modal" data-target="#exampleModal">Launch demo modal</button>
     </div>
-    <div id="A"></div>
-    <div id="B"><button>toggle</button></div>
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+    <div class="modal fade" id="regmodal">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <h3>Fill the fields below to register</h3>
                 </div>
-                <div class="modal-body">...</div>
+                <div class="modal-body">
+                    <label for="email">Email address</label>
+                    <input type="text" name="email" id="regEmail" required>
+                    <label for="first_name">First name/s</label>
+                    <input type="text" name="first_name" id="regFName" required>
+                    <label for="last_name">Last name/s</label>
+                    <input type="text" name="last_name" id="regLName" required>
+                    <label for="pass">Password</label>
+                    <input type="password" name="pass" id="regPass" required>
+                    <label for="street">Street</label>
+                    <input type="text" name="street" id="regStreet" required>
+                    <label for="city">City</label>
+                    <input type="text" name="city" id="regCity" required>
+                    <label for="phone">Phone number</label>
+                    <input type="text" name="phone" id="regPhone" required>
+                </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="register()">Register</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <div class="modal fade" id="imgmodal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Upload new photo</h3>
+                </div>
+                <div class="modal-body">
+                    <form action="upload" method="POST" encType="multipart/form-data">
+                        <input type="file" name="sampleFile" />
+                        <input type='submit' value='Upload!' />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="w3-button w3-xlarge w3-circle w3-dark-magenta w3-card-4" id="addPic" data-toggle="modal" data-target="#imgmodal">&#65291;</button>
+    <div class="w3-sidebar w3-bar-block w3-card w3-animate-right" style="display:none;right:0;" id="rightMenu">
+        <button onclick="closeRightMenu()" id="closeProfile" class="w3-bar-item w3-button w3-large">Close &times;</button>
+    </div>
+    <button id="openSideBar" class="w3-button w3-teal w3-xlarge w3-right" onclick="openRightMenu()">&#x21CC;</button>
+    <div class="imgDisplay1"><img src="images/display/big-one.jpg"></div>
+    <div class="imgDisplay2"><img src="images/display/masters-landscape.jpg"></div>
 </body>
+
 </html>
