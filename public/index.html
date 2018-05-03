@@ -13,6 +13,45 @@
     </script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script type="text/javascript">
+        setTimeout(function() {
+            ifLog();
+        }, 10);
+
+        function onload() {
+            profile();
+        }
+
+        function ifLog() {
+            if (sessionStorage.getItem("loggedInUser") !== null) {
+                document.getElementById("subBtn").setAttribute("onclick", "checkLogout()");
+                document.getElementById("addPic").setAttribute("data-target", "#imgmodal");
+                document.getElementById("openSideBar").style.display = "block";
+                document.getElementById("subBtn").value = "Logout";
+                //displayPics();
+                document.getElementById("gallery").style.display = "none";
+            }
+        }
+
+        function checkLogout() {
+            sessionStorage.clear();
+            alert("User logged out");
+            document.getElementById("subBtn").value = "Login";
+            document.getElementById("subBtn").setAttribute("onclick", "checkLogin()");
+            document.getElementById("openSideBar").style.display = "none";
+            console.log("User logged out");
+            document.getElementById("addPic").setAttribute("data-target", "#noLog");
+            document.getElementById("gallery").style.display = "block";
+        }
+
+        function profile() {}
+
+        function displayPics() {
+            var userFolder = "/public/users/" + sessionStorage.loggedInUser;
+            document.getElementById("gallery").innerHTML = "";
+            document.getElementById("galleryTop").setAttribute("src", userFolder);
+
+        }
+
         function openRightMenu() {
             document.getElementById("rightMenu").style.display = "block";
         }
@@ -21,18 +60,35 @@
             document.getElementById("rightMenu").style.display = "none";
         }
 
+        function upload() {
+            var request = new XMLHttpRequest();
+            request.onload = function() {
+                if (request.status === 200) {
+
+                }
+            }
+        }
+
         function checkLogin() {
             var request = new XMLHttpRequest();
             request.onload = function() {
                 if (request.status === 200) {
-                    if (sessionStorage.getItem("userId") !== null) {
+                    if (request.responseText === "no") {
+                        alert("No user found");
+                    }
+                    else if (sessionStorage.getItem("loggedInUser") !== null) {
                         alert("Someone is already logged in")
                     }
                     else {
-                        var responseData = request.responseText;
-                        sessionStorage.userId = responseData;
+                        sessionStorage.loggedInUser = request.responseText;
                         alert("Logged in successfully");
-                        console.log(responseData);
+                        console.log(request.responseText);
+                        document.getElementById("subBtn").setAttribute("onclick", "checkLogout()");
+                        document.getElementById("addPic").setAttribute("data-target", "#imgmodal");
+                        document.getElementById("openSideBar").style.display = "block";
+                        document.getElementById("subBtn").value = "Logout";
+                        //displayPics();
+                        document.getElementById("gallery").style.display = "none";
                     }
                 }
                 else {
@@ -122,6 +178,15 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="noLog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h3>You need to login to upload pictures</h3>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="modal fade" id="imgmodal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -130,21 +195,29 @@
                 </div>
                 <div class="modal-body">
                     <form action="upload" method="POST" encType="multipart/form-data">
-                        <input type="file" name="sampleFile" />
+                        <input type="file" name="sampleFile" accept="image/*" />
                         <input type='submit' value='Upload!' />
+
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    <button class="w3-button w3-xlarge w3-circle w3-dark-magenta w3-card-4" id="addPic" data-toggle="modal" data-target="#imgmodal">&#65291;</button>
+    <button class="w3-button w3-xlarge w3-circle w3-dark-magenta w3-card-4" id="addPic" data-toggle="modal" data-target="#noLog">&#65291;</button>
     <div class="w3-sidebar w3-bar-block w3-card w3-animate-right" style="display:none;right:0;" id="rightMenu">
         <button onclick="closeRightMenu()" id="closeProfile" class="w3-bar-item w3-button w3-large">Close &times;</button>
     </div>
     <button id="openSideBar" class="w3-button w3-teal w3-xlarge w3-right" onclick="openRightMenu()">&#x21CC;</button>
     <div id="gallery">You need to be logged in to view your photos.</div>
-    <div class="imgDisplay1"><img src="images/display/big-one.jpg"></div>
-    <div class="imgDisplay2"><img src="images/display/masters-landscape.jpg"></div>
+    <div id="galleryMain">
+        <img src="" alt="" id="imgDisplay1">
+    </div>
+    <div id="gallery2">
+        <img src="" alt="" id="imgDisplay2">
+    </div>
+    <div id="gallery3">
+        <img src="" alt="" id="imgDisplay3">
+    </div>
 </body>
 
 </html>

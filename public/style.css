@@ -1,4 +1,6 @@
 body {
+    width: 100%;
+    height: 100%;
     margin: 0;
     background-color: #eff5ff;
 }
@@ -67,7 +69,7 @@ html {
 }
 #openSideBar {
     position:relative;
-    display: inline;
+    display: none;
     margin-top: auto;
 }
 #closeProfile {
@@ -86,4 +88,28 @@ html {
     height: 320px;
     margin-left: 2%;
     margin-top: -15%;
+}
+#gallery{
+    display: block;
+    margin-top: 150px;
+    text-align: center;
+    font-size: 25px;
+    font-family: 'Roboto Condensed', sans-serif;
+    z-index: -1;
+}
+#noLog h3{
+    text-align: center;
+}
+#galleryMain{
+    display: none;
+    background-color: green;
+    margin-left: 4%;
+    width: 43%;
+    height: 550px;
+}
+#gallery2{
+    background-color: green;
+}
+#gallery3{
+    background-color: green;
 }

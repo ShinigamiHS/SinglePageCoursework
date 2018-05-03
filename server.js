@@ -5,6 +5,7 @@ var expressSession = require('express-session');
 var app = express();
 var bodyParser = require('body-parser');
 var upload = require('express-fileupload');
+var mkdirp = require('mkdirp');
 
 var urlencodedParser = bodyParser.urlencoded({
     extended: false
@@ -65,7 +66,7 @@ app.post('/loginAct', urlencodedParser, function(req, res) {
             res.send("" + id);
         }
         else {
-            res.send('User not found');
+            res.send('no');
             console.log(result);
         }
     });
@@ -73,20 +74,30 @@ app.post('/loginAct', urlencodedParser, function(req, res) {
 
 app.post('/register', urlencodedParser, function(req, res) {
     var query = 'INSERT INTO customer (email, first_name, last_name, password, street, city, phone) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    connection.query(query, [req.body.email, req.body.firstName, req.body.lastName, req.body.password, req.body.street, req.body.city, req.body.phone], function(err, result) {
-        if (err) {
-            res.send(err);
-            console.log(err);
-        }
-        if (req.body.email == "" || req.body.firstName == "" || req.body.lastName == "" || req.body.password == "" || req.body.street == "" || req.body.city == "" || req.body.phone == "") {
-            res.send('Fields nissing');
-            console.log(result);
-        }
-        else {
-            res.send('User registered');
-            console.log(result);
-        }
-    });
+    if (req.body.email == "" || req.body.firstName == "" || req.body.lastName == "" || req.body.password == "" || req.body.street == "" || req.body.city == "" || req.body.phone == "") {
+        res.send('Fields missing');
+        console.log('Fields missing');
+    }
+    else {
+        connection.query(query, [req.body.email, req.body.firstName, req.body.lastName, req.body.password, req.body.street, req.body.city, req.body.phone], function(err, result) {
+            if (err) {
+                res.send(err);
+                console.log(err);
+            }
+            else {
+                res.send('User registered');
+                mkdirp("/xampp/htdocs/SinglePageCoursework/public/users/" + req.body.email + "", function(err) {
+                    if (err) {
+                        console.error(err);
+                    }
+                    else {
+                        (console.log('Folder created'));
+                    }
+                });
+                console.log(result);
+            }
+        });
+    }
 });
 
 app.use(express.static('public'));
