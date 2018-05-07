@@ -1,0 +1,20 @@
+https://gist.github.com/BoyCook/5274570
+https://www.joyent.com/blog/risingstack-writing-testable-apis-the-basics
+http://stackoverflow.com/questions/13689110/full-integration-testing-for-nodejs-and-the-client-side-with-yeoman-and-mocha
+
+Simple JSON formats - attributes like style or class, might be arrays or maps
+
+add alternate document to run tests with 
+https://www.npmjs.com/package/html-document
+textContent
+
+edit useful answer here: 
+http://stackoverflow.com/questions/16372913/tell-mocha-to-use-coffeescript-files-by-default
+
+auto changelog bundling of releases
+
+query selector https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors
+querySelector1
+element.match(selector)
+
+attribute cache

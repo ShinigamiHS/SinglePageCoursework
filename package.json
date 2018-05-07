@@ -15,6 +15,7 @@
     "body-parser": "^1.18.2",
     "bootstrap": "^3.3.7",
     "cookie-parser": "^1.4.3",
+    "create-elements": "^1.1.9",
     "datatables.net-dt": "^1.10.16",
     "ejs": "^2.5.9",
     "express": "^4.16.2",

@@ -4,34 +4,52 @@
 <head>
     <meta charset="utf-8" />
     <title>CL☁UD</title>
+    <!--links and scripts in the head contain links to where certain necessary modules are hosted, these modules are: bootstrap and it's css, jquery, ajax, a font, as well as links to the .css page-->
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Quicksand:700" rel="stylesheet">
     <link href="style.css" type="text/css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
-    </script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
     <script type="text/javascript">
+        //these functions are run on a delay to make all the info they get from the window has already been loaded
         setTimeout(function() {
             ifLog();
         }, 10);
 
-        function onload() {
-            profile();
-        }
-
+        //checks if on page load someone is already logged in, if so, changes the page to contain all the "user" parts, such as the elements that contain the pictures, the "logout" button, and a button to access the profile
         function ifLog() {
             if (sessionStorage.getItem("loggedInUser") !== null) {
+                console.log(sessionStorage.getItem("loggedInUser"));
                 document.getElementById("subBtn").setAttribute("onclick", "checkLogout()");
                 document.getElementById("addPic").setAttribute("data-target", "#imgmodal");
                 document.getElementById("openSideBar").style.display = "block";
                 document.getElementById("subBtn").value = "Logout";
-                //displayPics();
                 document.getElementById("gallery").style.display = "none";
+                //same as before, this is run on a delay to ensure everything is loaded prior to it
+                setTimeout(function() {
+                    document.getElementById("userInput").value = sessionStorage.getItem("loggedInUser");
+                    profile();
+                    displayPics()
+                }, 500);
             }
         }
 
+        function checkProfile() {
+            if (sessionStorage.getItem("loggedInUser") !== null) {
+                var request = new XMLHttpRequest;
+                request.onload = function() {
+                    if (request.status === 200) {
+
+                    }
+                };
+                request.open("POST", "/profile");
+                request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            }
+        }
+
+        // when the "logout" button is pressed, this function deletes the sessionStorage, and changes the page back to what it was prior to the log on
         function checkLogout() {
             sessionStorage.clear();
             alert("User logged out");
@@ -41,34 +59,54 @@
             console.log("User logged out");
             document.getElementById("addPic").setAttribute("data-target", "#noLog");
             document.getElementById("gallery").style.display = "block";
+            $('#galleryMainDiv').empty();
         }
-
-        function profile() {}
-
+        // loads all of the user info into the side profile bar, on a delay, to ensure everything is loaded
+        function profile() {
+            setTimeout(function() {
+                document.getElementById("avatar").setAttribute("src", "/users/" + sessionStorage.getItem("loggedInUser") + "/avatar.png");
+                document.getElementById("userEmail").innerHTML = sessionStorage.getItem("loggedInUser");
+                document.getElementById("avatarInput").value = sessionStorage.loggedInUser
+            }, 100);
+        }
+        // creates <img> elements to store the files, by default the elements are hidden
         function displayPics() {
-            var userFolder = "/public/users/" + sessionStorage.loggedInUser;
-            document.getElementById("gallery").innerHTML = "";
-            document.getElementById("galleryTop").setAttribute("src", userFolder);
-
-        }
-
-        function openRightMenu() {
-            document.getElementById("rightMenu").style.display = "block";
-        }
-
-        function closeRightMenu() {
-            document.getElementById("rightMenu").style.display = "none";
-        }
-
-        function upload() {
-            var request = new XMLHttpRequest();
-            request.onload = function() {
-                if (request.status === 200) {
-
+            if (document.getElementById("galleryMain50") === null) {
+                //if more than 50 images are on the server, the max i value would have to be changed to display them
+                for (var i = 0; i <= 50; i++) {
+                    var img = document.createElement("img");
+                    img.id = "galleryMain" + i;
+                    img.style = "display:inline-block; margin-top: 50px; margin-left: 2%; width: 30%; height:450px";
+                    document.getElementById("galleryMainDiv").appendChild(img)
+                    img.src = "/users/" + sessionStorage.getItem("loggedInUser") + "/" + i + ".png";
+                    var imgId = document.getElementById("galleryMain" + i);
+                    imgId.onerror = function() {
+                        this.style.display = "none";
+                    }
+                }
+            }
+            //if pictures are found on the user folder, <img> elements have their display changed to display the pictures
+            else {
+                for (var i = 1; i <= 50; i++) {
+                    var imgId = document.getElementById("galleryMain" + i);
+                    if (imgId.onerror === false) {
+                        this.style.display = "inline-block";
+                    }
                 }
             }
         }
 
+
+        //prompts the profile side bar to open
+        function openRightMenu() {
+            document.getElementById("rightMenu").style.display = "block";
+        }
+        //prompts the profile side bar to close
+        function closeRightMenu() {
+            document.getElementById("rightMenu").style.display = "none";
+        }
+
+        //handles the login requests, with appropriate error messages if the details are wrong if someone is already logged in
         function checkLogin() {
             var request = new XMLHttpRequest();
             request.onload = function() {
@@ -76,19 +114,26 @@
                     if (request.responseText === "no") {
                         alert("No user found");
                     }
+                    //if a "sessionStorage" object already exists gives an error
                     else if (sessionStorage.getItem("loggedInUser") !== null) {
                         alert("Someone is already logged in")
                     }
+                    //if no error happens, changes the page into "user mode" where all images and the profile are displayed
                     else {
-                        sessionStorage.loggedInUser = request.responseText;
+                        var userObj = JSON.parse(request.responseText);
+                        sessionStorage.loggedInUser = userObj[0].email;
                         alert("Logged in successfully");
-                        console.log(request.responseText);
+                        console.log(userObj[0].email);
                         document.getElementById("subBtn").setAttribute("onclick", "checkLogout()");
                         document.getElementById("addPic").setAttribute("data-target", "#imgmodal");
                         document.getElementById("openSideBar").style.display = "block";
                         document.getElementById("subBtn").value = "Logout";
-                        //displayPics();
                         document.getElementById("gallery").style.display = "none";
+                        setTimeout(function() {
+                            displayPics();
+                            profile();
+                            document.getElementById("userInput").value = sessionStorage.loggedInUser;
+                        }, 200);
                     }
                 }
                 else {
@@ -105,6 +150,7 @@
             request.send("email=" + loginEmail + "&password=" + loginPwd);
         }
 
+        //handles registration requests, shows appropriate error messages if one of the sections is empty
         function register() {
             var request = new XMLHttpRequest();
             request.onload = function() {
@@ -136,6 +182,7 @@
 
 <body>
     <div class="header">
+        <!-- This is where the website header is, it contains the log in section, registration, and the logo -->
         <div class=userLog>
             <label for="email">Email</label>
             <input class="userBox" id="logEmail" type="text" name="email" required />
@@ -149,6 +196,7 @@
             <img class="logo" src="images/thumb.png" alt="cloud logo" />
         </div>
     </div>
+    <!-- bootstrap modal that handles the registration -->
     <div class="modal fade" id="regmodal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -178,6 +226,7 @@
             </div>
         </div>
     </div>
+    <!-- bootstrap modal that warns the user about needing to log in -->
     <div class="modal fade" id="noLog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -187,6 +236,7 @@
             </div>
         </div>
     </div>
+    <!-- bootstrap modal that contains the upload picture form -->
     <div class="modal fade" id="imgmodal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -195,28 +245,40 @@
                 </div>
                 <div class="modal-body">
                     <form action="upload" method="POST" encType="multipart/form-data">
-                        <input type="file" name="sampleFile" accept="image/*" />
-                        <input type='submit' value='Upload!' />
-
+                        <input type="file" name="sampleFile" accept="image/png" />
+                        <input type="text" name="userInput" id="userInput" value="">
+                        <input type='submit' value='Upload!' onclick="displayPics()" />
+                        <!-- calls for the "displayPics()" function to refresh the gallery section and display the newly uploaded picture -->
                     </form>
                 </div>
             </div>
         </div>
     </div>
+    <!-- the + button that directs to the modal that contains the "you need to login" warning if no one is logged in, or the upload picture modal -->
     <button class="w3-button w3-xlarge w3-circle w3-dark-magenta w3-card-4" id="addPic" data-toggle="modal" data-target="#noLog">&#65291;</button>
+    <!-- profile sidebar containing the elements that display the users name, email, address and profile picture -->
     <div class="w3-sidebar w3-bar-block w3-card w3-animate-right" style="display:none;right:0;" id="rightMenu">
+        <img src="" alt="" id="avatar">
+        <!-- the sidebar contains a part where you can upload your profile picture -->
+        <form action="uploadAvatar" method="POST" encType="multipart/form-data">
+            <input type="file" name="avatarFile" accept="image/png" id="avatarFile" />
+            <input type="text" name="avatarInput" id="avatarInput" value="">
+            <input type='submit' value='Upload!' />
+        </form>
+        <br>
+        <label for="userName">Your name:</label>
+        <h1 id="userName"></h1><br>
+        <label for="userEmail">Your email:</label>
+        <h2 id="userEmail"></h2><br>
+        <label for="userAddress">Your address:</label>
+        <h3 id="userAddress"></h3>
         <button onclick="closeRightMenu()" id="closeProfile" class="w3-bar-item w3-button w3-large">Close &times;</button>
     </div>
+    <!-- button that opens the profile sidebar -->
     <button id="openSideBar" class="w3-button w3-teal w3-xlarge w3-right" onclick="openRightMenu()">&#x21CC;</button>
+    <!-- the section that is then dinamically changed to display the pictures -->
     <div id="gallery">You need to be logged in to view your photos.</div>
-    <div id="galleryMain">
-        <img src="" alt="" id="imgDisplay1">
-    </div>
-    <div id="gallery2">
-        <img src="" alt="" id="imgDisplay2">
-    </div>
-    <div id="gallery3">
-        <img src="" alt="" id="imgDisplay3">
+    <div id="galleryMainDiv">
     </div>
 </body>
 

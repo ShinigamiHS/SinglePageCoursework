@@ -70,7 +70,7 @@ html {
 #openSideBar {
     position:relative;
     display: none;
-    margin-top: auto;
+    margin-top: -80px;
 }
 #closeProfile {
     position: absolute;
@@ -101,15 +101,19 @@ html {
     text-align: center;
 }
 #galleryMain{
+    display: inline-block;
+    margin-top: 50px;
+    margin-left: 2%;
+    width: 30%;
+    height: 450px;
+}
+#userInput{
     display: none;
-    background-color: green;
-    margin-left: 4%;
-    width: 43%;
-    height: 550px;
 }
-#gallery2{
-    background-color: green;
+#avatarInput {
+    display: none;
 }
-#gallery3{
-    background-color: green;
+#avatar {
+    margin-left: 25px;
+    width: 250px;
 }

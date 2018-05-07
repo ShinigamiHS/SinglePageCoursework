@@ -1,0 +1,391 @@
+<html>
+<head>
+	<title>Cr.elm Conversion from HTML and Verifier</title>
+<style>
+textarea{width:800px;height:300px;}
+#test_nodes{border:3px dashed red;margin:10px;padding:10px;}
+#validation_buttons{display:none;}
+label{white-space:nowrap;}
+</style>
+	<script src="Cr.js"></script>
+	<script src="Cr-json.js"></script>
+	<script src="Cr-convert.js"></script>
+	<script type="text/javascript">
+		function gel(n){
+			return document.getElementById(n);
+		}
+		function getSelectedOptions(){
+			return {
+				oneline: !gel('prettyPrint').checked,
+				removeWhitespace: gel('trimWhitespaceNodes').checked,
+				whitespaceReplaceWith: gel('wsReplaceWith').value,
+				childNodeAttributes: gel('childNodeAttributes').checked,
+				quoteAllAttributes: gel('quoteAll').checked
+			};
+		}
+		function htmlToCr(){
+			gel('output').value=Cr.javascriptFromHTML(gel('toConvert').value, getSelectedOptions());
+			verifyCrJS()
+			gel('validation_buttons').style.display='none';
+		}
+		function htmlToCrSimpleJson(){
+			if(!gel('childNodeAttributes').checked){
+				if( confirm('The `ChildNodes as Attributes` option will now be checked') ){
+					gel('childNodeAttributes').checked = true;
+				}else return;
+			}
+			gel('output').value=Cr.javascriptSimpleObjectfromHTML(gel('toConvert').value, getSelectedOptions());
+			verifySimpleCrObject()
+			gel('validation_buttons').style.display='none';
+		}
+		function htmlToCrJsObj(){
+			gel('output').value=Cr.javascriptObjectfromHTML(gel('toConvert').value, getSelectedOptions());
+			verifyCrObject()
+			gel('validation_buttons').style.display='none';
+		}
+		function htmlToCrJson(){
+			gel('output').value=Cr.JSONfromHTML(gel('toConvert').value, getSelectedOptions());
+			verifyCrJSON()
+			gel('validation_buttons').style.display='none';
+		}
+		
+		function verifyCrJS(){
+			gel('test_nodes').innerHTML='';
+			var node=eval(gel('output').value);
+			gel('test_nodes').appendChild(node);
+		}
+		function verifySimpleCrObject(){
+			gel('test_nodes').innerHTML='';
+			eval('var node='+gel('output').value+';');
+			//Cr.insertNodes(Cr.fromSimpleJson(node),gel('test_nodes'));
+			Cr.insertNodes(Cr.fromJson(node),gel('test_nodes'));
+		}
+		function verifyCrObject(){
+			gel('test_nodes').innerHTML='';
+			eval('var node='+gel('output').value+';');
+			//Cr.insertNodes(Cr.fromJsonObject(node),gel('test_nodes'));
+			Cr.insertNodes(Cr.fromJson(node),gel('test_nodes'));
+		}
+		function verifyCrJSON(){
+			gel('test_nodes').innerHTML='';
+			var node=Cr.fromJsonString(gel('output').value);
+			Cr.insertNodes(node,gel('test_nodes'));
+		}
+
+		function click_verifyCrJS(){
+			verifyCrJS();
+		}
+		function click_verifySimpleCrObject(){
+			verifySimpleCrObject();
+		}
+		function click_verifyCrObject(){
+			verifyCrObject();
+		}
+		function click_verifyCrJSON(){
+			verifyCrJSON();
+		}
+
+		function captureRenderedHtmlToInput(){
+			var tc=gel('toConvert');
+			tc.value = gel('test_nodes').innerHTML;
+			tc.scrollIntoViewIfNeeded();
+		}
+
+		function unlockValidationButtons(){
+			gel('validation_buttons').style.display='inline';
+		}
+				
+		function testCreation(){
+			htmlToCr();
+		}
+		
+		//Cr.delayedListeners=false;
+		function clickFunctionTest(){
+			alert('click worked!');
+		}
+
+		var doSomething = clickFunctionTest;
+
+	</script>
+</head>
+<body onload="testCreation()">
+	<h3>Cr.elm Conversion from HTML and Verifier</h3>
+	<small>Please remember: as always when appending elements, it is best to put them all as a child node of some parent node, and then append the parent node 
+	thus appending all of the nodes at once and generating fewer events and CPU stress!<br/>
+	</small><br/>	
+	Input HTML<br/>
+		<textarea onmouseover="this.select()" id="toConvert">&lt;div style="color:black;"&gt;&lt;h1&gt;Cr.elm - innerHTML be Gone!&lt;/h1&gt;
+
+&lt;img src="../Cr.png" onclick="clickFunctionTest()" class="ie reserved word test" var="ie reserved word test" alt="Javascript CreateElement Library Cr.elm" style="float:right;height:67px;width:500px;"/&gt;
+
+&lt;h3&gt;Simplifying document.createElement&lt;/h3&gt;
+
+Imagine you have to create a bunch of elements using javascript.  Go ahead imagine it, I'll wait.  Sure you could just use .innerHTML, or you could use JQuery .html - however then your HTML code string must be parsed into elements.
+&lt;br/&gt;&lt;br/&gt;
+For the sake of elegance and simplicity and "correct" attachment of events you should be using document.createElement then document.body.appendChild; EXCEPT what a god awful amount of writing and lines of code and space that takes up.
+&lt;br/&gt;&lt;br/&gt;
+Instead using the elm function of the Cr library one can create and nest nodes with ease!
+&lt;br/&gt;&lt;br/&gt;&lt;/div&gt;</textarea>
+		<br/>
+		<label><input type="checkbox" id="trimWhitespaceNodes" checked="checked"/> Trim Whitespace</label>
+		and Replace With <input type="text" id="wsReplaceWith" value="">
+		<label><input type="checkbox" id="prettyPrint" checked="checked"/> Make Tidy</label>
+		<label><input type="checkbox" id="childNodeAttributes" checked="checked"/> ChildNodes as Attributes</label>
+		<label><input type="checkbox" id="quoteAll"/> Quote All Attributes (JSON)</label>
+		<br/>
+		<input onclick="htmlToCr()" type="button" value="HTML to Cr.elm JS Function" title="Converts static HTML into dynamic javascript that can be run from a script tag, the calls to the Cr library will handle creation of nodes.  Fastest though Single Purpose." />
+		<input onclick="htmlToCrSimpleJson()" type="button" value="HTML to Cr.elm Simple JS Object" title="Convert static HTML into a Javascript Object that can be parsed by Cr.fromSimpleJson  Not as versitile as JSON string. `slower`" />
+		<input onclick="htmlToCrJsObj()" type="button" value="HTML to Cr.elm JS Object" title="Convert static HTML into a Javascript Object that can be parsed by Cr.fromJsonObject  Not as versitile as JSON string. `slower`" />
+		<input onclick="htmlToCrJson()" type="button" value="HTML to Cr.elm JSON String" title="Convert static HTML into JSON string that can be parsed by Cr.fromJsonString or parse it yourself and use fromJsonObject.  Most versitile yet `slowest`" />
+		<br/>Input Cr Code<br/><textarea onmouseover="this.select()" id="output" onclick="unlockValidationButtons()" onkeyup="unlockValidationButtons()"></textarea><br/>
+		
+		<div>
+<script type="text/javascript">
+//var myCodeMirror = CodeMirror.fromTextArea(document.getElementById('toConvert'), {
+//        lineNumbers: true,
+//        matchBrackets: true,
+//        mode: "text/x-csrc"
+//      });
+//var myCodeMirror = CodeMirror.fromTextArea(document.getElementById('output'), {
+//        lineNumbers: true,
+//        matchBrackets: true,
+//        mode: "text/x-csrc"
+//      });    
+</script>
+
+
+		<div id="test_results">
+		<span id="validation_buttons">
+<input onclick="click_verifyCrJS()" type="button" value="Test as Cr.elm function calls" title="Validate Cr.elm function calls" />
+<input onclick="click_verifySimpleCrObject()" type="button" value="Test as Cr simple javascript object" title="Validate Cr Object" />
+<input onclick="click_verifyCrObject()" type="button" value="Test as Cr javascript object" title="Validate Cr Object" />
+<input onclick="click_verifyCrJSON()" type="button" value="Test as Cr JSON string" title="Validate Cr JSON" />
+		</span>
+		Test Creates:</div>
+		<div id="test_nodes"></div>
+		
+<input onclick="captureRenderedHtmlToInput()" type="button" value="Capture Rendered HTML as Test Input" title="Makes the rendering above the HTML input. WARNING: at this time you will loose all events in the origional HTML." /><br/>
+
+			Note: Text nodes may not append correctly unless they are a child of a parent node since<br/>
+	Cr.txt never auto-appends to the DOM tree.  In these rare cases you can use Cr.insertNode(Cr.txt("text content"),document.body)<br/>
+	Although it is recommended to encase your entire block in a div anyway to save on CPU and specify destination only once.
+		</div>
+		
+		
+		
+		<h3>how to use</h3>
+		Simply include the appropriate Cr libraries to your document <head> and then add the javascript code generated to a script tag.
+		<br/><br/>
+		document.body must exist for these to work, so it is simplest to add the script tag to the body tag
+		<br/><br/>
+		for extra assurance don't run your script until the onload or DOMNodeInserted event fires.
+		<br/><br/>
+		How to use Cr Javascript Function Calls<br/>
+		
+<textarea id="touse-cr-js" name="touse-cr-js">
+&lt;script type="text/javascript" src="Cr_min.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript"&gt;
+	//paste your generated HTML to Cr.elm JS Function code here in place of the following example
+	
+	var mydiv=Cr.elm('div',{style:'color:red'},[Cr.elm('Hello World')],document.body);
+	mydiv.scrollIntoViewIfNeeded();
+&lt;/script&gt;</textarea>
+<script type="text/javascript">
+var myCodeMirror = CodeMirror.fromTextArea(document.getElementById('touse-cr-js'), {
+        lineNumbers: true,
+        matchBrackets: true,
+        mode: "text/x-csrc"
+      });
+</script>
+
+<br/>
+To use JS object or JSON string version the appropriate conversion function must be called.
+<br/><br/>
+Javascript Objects<br/>
+
+<textarea id="touse-cr-jsonObj" name="touse-cr-jsonObj">
+&lt;script type="text/javascript" src="Cr_min.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="Cr-json_min.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript"&gt;
+	//paste your generated Javascript Object into the following variable
+	
+	CrJSONobject={elm:["div",{style:"color:red"},[{txt:["Hello World"]}],document.body]};
+	var node_s=Cr.fromJson(CrJSONobject);
+	Cr.insertNodes(node_s,document.body);
+
+	
+&lt;/script&gt;</textarea>
+<script type="text/javascript">
+var myCodeMirror = CodeMirror.fromTextArea(document.getElementById('touse-cr-jsonObj'), {
+        lineNumbers: true,
+        matchBrackets: true,
+        mode: "text/x-csrc"
+      });
+</script>
+
+<br/>JSON Strings<br/>
+
+<textarea id="touse-cr-jsonstring" name="touse-cr-jsonstring">
+&lt;script type="text/javascript" src="Cr_min.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="Cr-json_min.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript"&gt;
+	//paste your generated JSON into the following string variable
+	// (between single quotes CrJSONstring='... ...';)
+	
+	CrJSONstring='{"elm":["div",{"style":"color:red"},[{"txt":["Hello World"]}],"document.body"]}';
+	var node_s=Cr.fromJsonString(CrJSONstring);
+	Cr.insertNodes(node_s,document.body);
+
+	
+&lt;/script&gt;</textarea>
+<script type="text/javascript">
+var myCodeMirror = CodeMirror.fromTextArea(document.getElementById('touse-cr-jsonstring'), {
+        lineNumbers: true,
+        matchBrackets: true,
+        mode: "text/x-csrc"
+      });
+</script>
+
+		<div id="howtouse"></div>
+		
+		<h3>converstion cevats - legacy events</h3>
+		If you had complex events like this you may be in for a bit of a shock
+		<br/><br/>
+		&lt;a href="#" onclick="handleClick(this,event,myvariable)"&gt;link&lt;/a&gt;
+		<br/><br/>
+		It will be much simplified by Cr to simply pass the event to the function, something like this:
+		<br/><br/>
+		&lt;a href="#" onclick="handleClick(event)"&gt;link&lt;/a&gt;
+		<br/><br/>
+		The reasons for this are simply the nature of elm.addEventListener('click',fn,useCapture); does not allow function parameters.
+		<br/><br/>
+		You may have to use some helper functions to get the event's target or srcElement (to get the "this" passed above)
+		<br/><br/>
+		Here are the helper functions followed by an example of your new handleClick function:
+		<br/><br/>
+<textarea id="legacyevents" name="legacyevents">
+function getEventTarget(ev){
+	ev = ev || event;
+	var targ=(typeof(ev.target)!='undefined') ? ev.target : ev.srcElement;
+	if(targ !=null){
+	    if(targ.nodeType==3)
+	        targ=targ.parentNode;
+	}
+	return targ;
+}
+function preventEventDefault(ev){
+	ev = ev || event;
+	if(ev.preventDefault)ev.preventDefault();
+	ev.returnValue=false;
+	return false;
+}
+function stopEventPropagation(ev){
+	ev = ev || event;
+	if(ev.stopPropagation)ev.stopPropagation();
+	ev.cancelBubble=true;
+	ev.cancel=true;
+}
+function cancelEvent(e){
+  e = e ? e : window.event;
+  if(e.stopPropagation)
+    e.stopPropagation();
+  if(e.preventDefault)
+    e.preventDefault();
+  e.cancelBubble = true;
+  e.cancel = true;
+  e.returnValue = false;
+  return false;
+}
+
+function handleClick(ev){
+	ev = ev || event;
+	clickedElement = getEventTarget(ev);
+	
+	/*your code goes here, optionally; to cancel the event as needed (below).*/
+	
+	//stopEventPropagation(ev);
+	//return preventEventDefault(ev);
+	//return cancelEvent(ev);//performs both stopPropogation and preventDefault
+}</textarea>
+<script type="text/javascript">
+var myCodeMirror = CodeMirror.fromTextArea(document.getElementById('legacyevents'), {
+        lineNumbers: true,
+        matchBrackets: true,
+        mode: "text/x-csrc"
+      });
+</script>
+
+
+
+<script type="text/javascript">
+
+var redOnMouseOver=function(ev){
+	ev.target.style.color='red';
+}
+
+Cr.elm('div',{
+	style: 'color:grey;border:1px solid red;border-radius:3px;padding:10px;margin:5px;',
+	title: "About: childNodes as an attribute.",
+	childNodes:[
+		Cr.txt('If you would rather specify childNodes as an attribute, '),
+		Cr.txt('which provides some more readable nesting options, this is also now supported. '),
+		Cr.elm('br'),
+		Cr.elm('span',{
+			style: 'color:black;cursor:crosshair;',
+			events: Cr.events(
+				Cr.event('mouseover',redOnMouseOver),
+				Cr.event('mouseout',function(ev){ev.target.style.color='black';})
+			),
+			childNodes:[
+				Cr.txt('When doing so, the third argument must be omitted.  The third argument is treated as appendTo.  Please "view source" to see how this statement is generated')
+			]
+		})
+	]
+},document.body);
+
+
+var elm = Cr.elm('div',{
+	style: 'color:grey;border:1px solid red;border-radius:3px;padding:10px;margin:5px;',
+	title: "About: childNodes as an attribute.",
+	childNodes:[
+		Cr.txt('If you would rather specify childNodes as an attribute;')
+	]
+},[
+	Cr.elm('br'),
+	Cr.txt('If you still specify the third argument and it\'s a node array, this will trigger a console.warn '),
+	Cr.elm('br'),
+	Cr.txt('the third argument addchilds will be array.concat with attributes.childNodes ')
+]);
+
+document.body.appendChild(elm);
+
+Cr.elm('div',{
+	style: 'color:grey;border:1px solid red;border-radius:3px;padding:10px;margin:5px;',
+	title: "About: childNodes as an attribute.",
+	childNodes:[
+		Cr.txt('If you would rather specify childNodes as an attribute;')
+	]
+},[
+	Cr.elm('br'),
+	Cr.txt('If you still specify the third argument node array, and fourth argument destination, this will trigger a console.warn '),
+	Cr.elm('br'),
+	Cr.txt('the third argument addchilds will be array.concat with attributes.childNodes '),
+		Cr.elm('br'),
+	Cr.txt('the fourth argument appnedTo will be honored as the 4rd argument ')
+],document.body);
+
+
+Cr.elm('div',{
+	style: 'color:grey;border:1px solid red;border-radius:3px;padding:10px;margin:5px;',
+	title: "About: childNodes as an attribute.",
+	childNodes:[
+		Cr.txt('If you would rather specify childNodes as an attribute;'),
+		Cr.elm('br'),
+		Cr.txt('If you still specify the fourth argument this will trigger a console.warn '),
+	]
+},document.body,document.body);
+
+</script>
+
+</body>
+</html>
